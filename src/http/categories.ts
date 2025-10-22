@@ -5,7 +5,7 @@ const getProductByCategory = async (name: string) => {
         if (name === "all") {
             url = `https://api.escuelajs.co/api/v1/products`;
         } else {
-            url = `https://api.escuelajs.co/api/v1/products?categoryName=${name}`;
+            url = `https://api.escuelajs.co/api/v1/products?categoryId=${name}`;
         }
         
         const response = await fetch(url);

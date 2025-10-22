@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardDescription, CardTitle, CardFooter, CardContent } from '@/components/ui/card'
 
+import { getCategoryDisplayName } from '../../store/categoryMapper'
+
 import { cn } from '@/lib/utils'
 import type { Product } from '@/interface/product'
 
@@ -59,7 +61,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <CardHeader>
           <CardTitle className="card-title">{product.title}</CardTitle>
           <CardDescription className="badge-container">
-            <Badge variant='outline'>{product.category.name}</Badge>
+            <Badge variant='outline'>{getCategoryDisplayName(product.category.id.toString())}</Badge>
             <Badge variant='outline'>ID: {product.id}</Badge>
           </CardDescription>
         </CardHeader>

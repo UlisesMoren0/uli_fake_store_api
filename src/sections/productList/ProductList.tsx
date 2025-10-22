@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import type { Product } from "../../interface/product";
 import { useProducts } from "../../store/useProducts.controller";
 import ProductCard from "../productCard/productCard";
+import { getCategoryDisplayName } from '../../store/categoryMapper'
 
 
 export function ProductList() {
@@ -34,28 +35,7 @@ export function ProductList() {
     const productsToShow = currentCategory ? categoryProducts : allProducts;
     const isLoading = currentCategory ? categoryLoading : productsLoading;
     const error = currentCategory ? categoryError : productsError;
-    const getCategoryDisplayName = (categoryId: string) => {
-        console.log("🔍 currentCategory valor recibido:", categoryId, typeof categoryId);
-        const categoryNames: Record<string, string> = {
-            '21': 'Ropa',
-            '22': 'Electrónicos',
-            '23': 'Muebles',
-            '24': 'Zapatos',
-            '25': 'Varios',
-            '26': 'Nueva categoría',
-            '32': 'Dexter 174',
-            '42': 'Dexter 918',
-            '40': 'Dexter 578',
-            'dexter_929wwww': 'Dexter 929wwww',
-            'dexter_592': 'Dexter 592',
-            '41': 'Dexter 683',
-            'dexter_676': 'Dexter 676',
-            '44': 'Cadena',
-            '58': 'Sabra dios q es esto',
-            '60': 'Categoría de Prueba',
-            };
-        return categoryNames[categoryId] || categoryId;
-};
+
 
 
     return (
