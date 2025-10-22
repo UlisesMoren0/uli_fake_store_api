@@ -1,3 +1,4 @@
+import { useProductsByCategory } from "@/store/useProductsByCategory.controller";
 import { useEffect } from "react";
 import type { Product } from "../../interface/product";
 import { useProducts } from "../../store/useProducts.controller";
@@ -5,21 +6,89 @@ import ProductCard from "../productCard/productCard";
 
 
 export function ProductList() {
-    const { products, error, loading, fetchProducts } = useProducts();
+    const {
+        categories: categoryProducts,
+        currentCategory,
+        loading: categoryLoading,
+        error: categoryError,
+        showingAllProducts,
+        allCategoryProducts,
+        showAllProducts
+    } = useProductsByCategory();
+
+    const {
+        products: allProducts,
+        loading: productsLoading,
+        error: productsError,
+        fetchProducts
+    } = useProducts();
 
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        if (!currentCategory) {
+            // Si no hay categoría actual, cargar todos los productos
+            fetchProducts();
+        }
+    }, [currentCategory, fetchProducts]);
+
+    //Determino que productos mostrar
+    const productsToShow = currentCategory ? categoryProducts : allProducts;
+    const isLoading = currentCategory ? categoryLoading : productsLoading;
+    const error = currentCategory ? categoryError : productsError;
+    const getCategoryDisplayName = (categoryId: string) => {
+        console.log("🔍 currentCategory valor recibido:", categoryId, typeof categoryId);
+        const categoryNames: Record<string, string> = {
+            '21': 'Ropa',
+            '22': 'Electrónicos',
+            '23': 'Muebles',
+            '24': 'Zapatos',
+            '25': 'Varios',
+            '26': 'Nueva categoría',
+            '32': 'Dexter 174',
+            '42': 'Dexter 918',
+            '40': 'Dexter 578',
+            'dexter_929wwww': 'Dexter 929wwww',
+            'dexter_592': 'Dexter 592',
+            '41': 'Dexter 683',
+            'dexter_676': 'Dexter 676',
+            '44': 'Cadena',
+            '58': 'Sabra dios q es esto',
+            '60': 'Categoría de Prueba',
+            };
+        return categoryNames[categoryId] || categoryId;
+};
+
 
     return (
         <div className="product-list-container">
-            {/* 🔄 Estados de carga y error */}
-            {loading && (
-                <div className="loading-container">
-                    <p className="loading-text">Cargando productos...</p>
+            {/* Ahora muestra la categoria actual */}
+            {currentCategory && (
+                <div className="category-info">
+                    <h3>
+                        {currentCategory === "all" ? "Todos los Productos" : `Categoría: ${getCategoryDisplayName(currentCategory)}`}
+                    </h3>
+                    <p className="category-count">
+                        Mostrando {categoryProducts.length} de {categoryProducts.length} productos
+                    </p>
+                    {!showingAllProducts && allCategoryProducts.length > 10 && (
+                        <button onClick={showAllProducts} className="show-all-button">
+                            Mostrar todos los productos
+                        </button>
+                    )}
                 </div>
             )}
-            
+
+            {/*  estados de loading/error */}
+            {isLoading && (
+                <div className="loading-container">
+                    <div className="loading-spinner">
+                        {/*INSERTAR SPINNER PENDEJO*/}
+                        <div className="loading-text">
+                            {currentCategory ? "Cargando productos de la categoría..." : "Cargando productos..."}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {error && (
                 <div className="error-container">
                     <p className="error-text">Error: {error}</p>
@@ -27,25 +96,25 @@ export function ProductList() {
             )}
 
             {/* 🎨 Grid de productos usando ProductCard */}
-            {!loading && !error && products.length > 0 && (
+            {!isLoading && !error && productsToShow.length > 0 && (
                 <div className="product-grid">
-                    {products.map((product: Product) => (
+                    {productsToShow.map((product: Product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             )}
 
             {/* 📦 Mensaje cuando no hay productos */}
-            {!loading && !error && products.length === 0 && (
+            {!isLoading && !error && productsToShow.length === 0 && (
                 <div className="empty-container">
                     <p className="empty-text">No hay productos disponibles</p>
                 </div>
             )}
 
             {/* 🔄 Botón cargar más */}
-            {!loading && products.length > 0 && (
+            {!isLoading && productsToShow.length > 0 && (
                 <div className="load-more-container">
-                    <button 
+                    <button
                         onClick={fetchProducts}
                         className="load-more-button"
                     >

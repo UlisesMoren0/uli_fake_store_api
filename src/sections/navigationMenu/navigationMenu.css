@@ -1,9 +1,343 @@
 /* NavigationMenu Styles */
 
+/* All products button */
+.all-products-button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.all-products-button:hover {
+    background-color: #f3f4f6;
+}
+
+.all-products-button.active {
+    background-color: #b2b2b2;
+    color: white;
+    border-color: #b2b2b2;
+}
+
+.current-category-badge {
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #b2b2b2;
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* ===== VARIABLES CSS PARA SHADCN THEME ===== */
+:root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 217.2 91.2% 59.8%;
+        --primary-foreground: 222.2 84% 4.9%;
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 224.3 76.3% 94.1%;
+    }
+}
+
 /* Título del store */
 .titleNavText {
     font-weight: bold;
 }
+
+/* ===== ESTILOS BASE DEL NAVIGATION MENU (DESDE UI COMPONENT) ===== */
+
+/* NavigationMenu Root - Contenedor principal */
+.navigation-menu-root {
+    position: relative; /* relative */
+    display: flex; /* flex */
+    max-width: max-content; /* max-w-max */
+    flex: 1; /* flex-1 */
+    align-items: center; /* items-center */
+    justify-content: center; /* justify-center */
+}
+
+/* NavigationMenuList - Lista principal */
+.navigation-menu-list {
+    display: flex; /* flex */
+    flex: 1; /* flex-1 */
+    list-style: none; /* list-none */
+    align-items: center; /* items-center */
+    justify-content: center; /* justify-center */
+    gap: 0.25rem; /* gap-1 */
+}
+
+/* NavigationMenuItem - Item individual */
+.navigation-menu-item {
+    position: relative; /* relative */
+}
+
+/* NavigationMenuTrigger - Botón trigger */
+.navigation-menu-trigger {
+    display: inline-flex; /* inline-flex */
+    height: 2.25rem; /* h-9 */
+    width: max-content; /* w-max */
+    align-items: center; /* items-center */
+    justify-content: center; /* justify-center */
+    border-radius: 0.375rem; /* rounded-md */
+    background-color: hsl(var(--background)); /* bg-background */
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    transition: color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* transition-[color,box-shadow] */
+    outline: none;
+}
+
+.navigation-menu-trigger:hover {
+    background-color: hsl(var(--accent)); /* hover:bg-accent */
+    color: hsl(var(--accent-foreground)); /* hover:text-accent-foreground */
+}
+
+.navigation-menu-trigger:focus {
+    background-color: hsl(var(--accent)); /* focus:bg-accent */
+    color: hsl(var(--accent-foreground)); /* focus:text-accent-foreground */
+    outline: 1px solid; /* focus-visible:outline-1 */
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.5); /* focus-visible:ring-[3px] focus-visible:ring-ring/50 */
+}
+
+.navigation-menu-trigger:disabled {
+    pointer-events: none; /* disabled:pointer-events-none */
+    opacity: 0.5; /* disabled:opacity-50 */
+}
+
+.navigation-menu-trigger[data-state="open"] {
+    background-color: hsl(var(--accent) / 0.5); /* data-[state=open]:bg-accent/50 */
+    color: hsl(var(--accent-foreground)); /* data-[state=open]:text-accent-foreground */
+}
+
+.navigation-menu-trigger[data-state="open"]:hover {
+    background-color: hsl(var(--accent)); /* data-[state=open]:hover:bg-accent */
+}
+
+.navigation-menu-trigger[data-state="open"]:focus {
+    background-color: hsl(var(--accent)); /* data-[state=open]:focus:bg-accent */
+}
+
+/* Chevron icon en el trigger */
+.navigation-menu-chevron {
+    position: relative; /* relative */
+    top: 1px; /* top-[1px] */
+    margin-left: 0.25rem; /* ml-1 */
+    width: 0.75rem; /* size-3 */
+    height: 0.75rem; /* size-3 */
+    transition: transform 0.3s ease; /* transition duration-300 */
+}
+
+.navigation-menu-trigger[data-state="open"] .navigation-menu-chevron {
+    transform: rotate(180deg); /* group-data-[state=open]:rotate-180 */
+}
+
+/* NavigationMenuContent - Contenido del dropdown */
+.navigation-menu-content {
+    position: absolute; /* md:absolute */
+    top: 0; /* top-0 */
+    left: 0; /* left-0 */
+    width: 100%; /* w-full */
+    padding: 0.5rem; /* p-2 */
+    padding-right: 0.625rem; /* pr-2.5 */
+}
+
+@media (min-width: 768px) {
+    .navigation-menu-content {
+        width: auto; /* md:w-auto */
+    }
+}
+
+/* Animaciones para el content */
+.navigation-menu-content[data-motion^="from-"] {
+    animation: fadeIn 0.15s ease-out, slideIn 0.15s ease-out; /* animate-in fade-in slide-in */
+}
+
+.navigation-menu-content[data-motion^="to-"] {
+    animation: fadeOut 0.15s ease-in, slideOut 0.15s ease-in; /* animate-out fade-out slide-out */
+}
+
+/* NavigationMenuViewport - Viewport container */
+.navigation-menu-viewport-container {
+    position: absolute; /* absolute */
+    top: 100%; /* top-full */
+    left: 0; /* left-0 */
+    isolation: isolate; /* isolate */
+    z-index: 50; /* z-50 */
+    display: flex; /* flex */
+    justify-content: center; /* justify-center */
+}
+
+.navigation-menu-viewport {
+    position: relative; /* relative */
+    margin-top: 0.375rem; /* mt-1.5 */
+    width: 100%; /* w-full */
+    overflow: hidden; /* overflow-hidden */
+    border-radius: 0.375rem; /* rounded-md */
+    border: 1px solid hsl(var(--border)); /* border */
+    background-color: hsl(var(--popover)); /* bg-popover */
+    color: hsl(var(--popover-foreground)); /* text-popover-foreground */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow */
+    transform-origin: top center; /* origin-top-center */
+}
+
+.navigation-menu-viewport[data-state="open"] {
+    animation: zoomIn 0.15s ease-out, fadeIn 0.15s ease-out; /* data-[state=open]:animate-in zoom-in-90 fade-in */
+}
+
+.navigation-menu-viewport[data-state="closed"] {
+    animation: zoomOut 0.15s ease-in, fadeOut 0.15s ease-in; /* data-[state=closed]:animate-out zoom-out-95 fade-out */
+}
+
+/* NavigationMenuLink - Enlaces/botones */
+.navigation-menu-link {
+    display: flex; /* flex */
+    flex-direction: column; /* flex-col */
+    gap: 0.25rem; /* gap-1 */
+    border-radius: 0.125rem; /* rounded-sm */
+    padding: 0.5rem; /* p-2 */
+    font-size: 0.875rem; /* text-sm */
+    transition: all 0.15s ease-in-out; /* transition-all */
+    outline: none;
+}
+
+.navigation-menu-link:hover {
+    background-color: hsl(var(--accent)); /* hover:bg-accent */
+    color: hsl(var(--accent-foreground)); /* hover:text-accent-foreground */
+}
+
+.navigation-menu-link:focus {
+    background-color: hsl(var(--accent)); /* focus:bg-accent */
+    color: hsl(var(--accent-foreground)); /* focus:text-accent-foreground */
+    outline: 1px solid; /* focus-visible:outline-1 */
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.5); /* focus-visible:ring-[3px] focus-visible:ring-ring/50 */
+}
+
+.navigation-menu-link[data-active="true"] {
+    background-color: hsl(var(--accent) / 0.5); /* data-[active=true]:bg-accent/50 */
+    color: hsl(var(--accent-foreground)); /* data-[active=true]:text-accent-foreground */
+}
+
+.navigation-menu-link[data-active="true"]:hover {
+    background-color: hsl(var(--accent)); /* data-[active=true]:hover:bg-accent */
+}
+
+.navigation-menu-link[data-active="true"]:focus {
+    background-color: hsl(var(--accent)); /* data-[active=true]:focus:bg-accent */
+}
+
+/* SVG icons en links */
+.navigation-menu-link svg:not([class*='text-']) {
+    color: hsl(var(--muted-foreground)); /* [&_svg:not([class*='text-'])]:text-muted-foreground */
+}
+
+.navigation-menu-link svg:not([class*='size-']) {
+    width: 1rem; /* [&_svg:not([class*='size-'])]:size-4 */
+    height: 1rem;
+}
+
+/* NavigationMenuIndicator */
+.navigation-menu-indicator {
+    position: absolute; /* absolute */
+    top: 100%; /* top-full */
+    z-index: 10; /* z-[1] */
+    display: flex; /* flex */
+    height: 0.375rem; /* h-1.5 */
+    align-items: flex-end; /* items-end */
+    justify-content: center; /* justify-center */
+    overflow: hidden; /* overflow-hidden */
+}
+
+.navigation-menu-indicator[data-state="visible"] {
+    animation: fadeIn 0.15s ease-out; /* data-[state=visible]:animate-in fade-in */
+}
+
+.navigation-menu-indicator[data-state="hidden"] {
+    animation: fadeOut 0.15s ease-in; /* data-[state=hidden]:animate-out fade-out */
+}
+
+.navigation-menu-indicator-arrow {
+    position: relative; /* relative */
+    top: 60%; /* top-[60%] */
+    height: 0.5rem; /* h-2 */
+    width: 0.5rem; /* w-2 */
+    transform: rotate(45deg); /* rotate-45 */
+    border-top-left-radius: 0.125rem; /* rounded-tl-sm */
+    background-color: hsl(var(--border)); /* bg-border */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* shadow-md */
+}
+
+/* ===== ANIMACIONES PERSONALIZADAS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-10px); }
+    to { transform: translateY(0); }
+}
+
+@keyframes slideOut {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); }
+    to { transform: scale(1); }
+}
+
+@keyframes zoomOut {
+    from { transform: scale(1); }
+    to { transform: scale(0.95); }
+}
+
+/* ===== ESTILOS PERSONALIZADOS DEL COMPONENTE ===== */
 
 /* Contenedor principal del contenido del menú */
 .menu-content-container {

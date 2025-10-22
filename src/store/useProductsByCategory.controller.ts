@@ -7,7 +7,6 @@ interface CategoryDisplay {
     id: string;
     name: string;
     displayName: string;
-    icon: string;
     image: string;
     slug: string;
 }
@@ -19,10 +18,16 @@ interface ProductsByCategoryStore {
     loading: boolean;
     loadingCategories: boolean;
     error: string | null;
-    
+    categoriesMap: Map<string, CategoryDisplay[]>;
+    offset?: number;
+    showingAllProducts: boolean;
+    allCategoryProducts: Product[];
+    showAllProducts: () => void;
+
     fetchAvailableCategories: () => Promise<void>;
     fetchProductsByCategory: (name: string) => Promise<void>;
     setCurrentCategory: (name: string) => void;
+    clearCategoryFilter: () => void; // 🆕 Nueva función
 }
 
 const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
@@ -32,6 +37,11 @@ const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
     loading: false,
     loadingCategories: false,
     error: null,
+    offset: 0,
+    showingAllProducts: false,
+    allCategoryProducts: [],
+    showAllProducts: () => set({ showingAllProducts: true, allCategoryProducts: [] }),
+    categoriesMap: new Map<string, CategoryDisplay[]>(),
 
     // 🚀 Obtener categorías extrayendo de productos
     fetchAvailableCategories: async () => {
@@ -39,29 +49,18 @@ const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
         try {
             // 🆕 Obtener todos los productos para extraer categorías únicas
             const allProducts: Product[] = await getProductByCategory("all");
-            
+
             // 🎯 Extraer categorías únicas de los productos
             const uniqueCategories = new Map<string, Category>();
-            
+
             for (const product of allProducts) {
                 if (product.category && !uniqueCategories.has(product.category.id.toString())) {
                     uniqueCategories.set(product.category.id.toString(), product.category);
                 }
             }
-            
+
             const apiCategories: Category[] = Array.from(uniqueCategories.values());
-            
-            // Mapear a formato de UI
-            const categoryIcons: { [key: string]: string } = {
-                "electronics": "🔌",
-                "jewelery": "💎",
-                "men's clothing": "👔",
-                "women's clothing": "👗",
-                "shoes": "👟",
-                "furniture": "🪑",
-                "clothes": "👕",
-                "miscellaneous": "📦"
-            };
+
 
             const formattedCategories: CategoryDisplay[] = [
                 // Categoría "Todos" al inicio
@@ -69,7 +68,6 @@ const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
                     id: "all",
                     name: "all",
                     displayName: "Todos los Productos",
-                    icon: "🛍️",
                     image: "",
                     slug: "all"
                 },
@@ -78,7 +76,6 @@ const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
                     id: category.id.toString(),
                     name: category.name,
                     displayName: category.name.charAt(0).toUpperCase() + category.name.slice(1),
-                    icon: categoryIcons[category.name.toLowerCase()] || "📦",
                     image: category.image,
                     slug: category.slug
                 }))
@@ -86,44 +83,53 @@ const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
 
             console.log('🎯 Categorías extraídas:', formattedCategories);
 
-            set({ 
+            set({
                 availableCategories: formattedCategories,
-                loadingCategories: false 
+                loadingCategories: false
             });
 
         } catch (error) {
             console.error('❌ Error al cargar categorías:', error);
-            set({ 
+            set({
                 error: error instanceof Error ? error.message : 'Error al cargar categorías',
-                loadingCategories: false 
+                loadingCategories: false
             });
         }
     },
 
     // 🎯 Obtener productos usando tu HTTP
-    fetchProductsByCategory: async (categoryNameOrId: string) => {
+    fetchProductsByCategory: async (categoryName: string) => {
         set({ loading: true, error: null });
         try {
             // 📡 Usar tu función HTTP directamente
-            const products: Product[] = await getProductByCategory(categoryNameOrId);
-            
-            set({ 
+            const products: Product[] = await getProductByCategory(categoryName);
+
+            set({
                 categories: products,
-                currentCategory: categoryNameOrId,
-                loading: false 
+                currentCategory: categoryName,
+                loading: false
             });
 
         } catch (error) {
-            set({ 
+            set({
                 error: error instanceof Error ? error.message : 'Error al cargar productos',
-                loading: false 
+                loading: false
             });
         }
     },
 
     setCurrentCategory: (name: string) => {
         set({ currentCategory: name });
-    }
+    },
+
+    clearCategoryFilter: () => {
+        set({
+            currentCategory: null,
+            categories: [],
+            allCategoryProducts: [],
+            showingAllProducts: false
+        });
+    },
 }));
 
 export { useProductsByCategory };

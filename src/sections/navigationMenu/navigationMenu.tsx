@@ -14,9 +14,11 @@ export function NavigationMenuCategory() {
         availableCategories,
         loadingCategories,
         error,
+        currentCategory,
         fetchAvailableCategories,
         fetchProductsByCategory,
         setCurrentCategory,
+        clearCategoryFilter,
     } = useProductsByCategory();
 
     // 🚀 Cargar categorías al inicio
@@ -33,10 +35,10 @@ export function NavigationMenuCategory() {
     });
 
     // 🎯 Manejar selección simple
-    const handleCategorySelect = async (categoryId: string) => {
+    const handleCategorySelect = async (name: string) => {
         try {
-            await fetchProductsByCategory(categoryId);
-            setCurrentCategory(categoryId);
+            await fetchProductsByCategory(name);
+            setCurrentCategory(name);
         } catch (error) {
             console.error('Error al seleccionar categoría:', error);
         }
@@ -50,7 +52,14 @@ export function NavigationMenuCategory() {
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger>Categorías</NavigationMenuTrigger>
+                    <NavigationMenuTrigger>Categorías
+                        {currentCategory && currentCategory !== 'all' && (
+                            <span className="current-category-badge">
+                                {currentCategory}
+                            </span>
+                        )}
+                    </NavigationMenuTrigger>
+
                     <NavigationMenuContent>
                         <div className="menu-content-container">
                             {/* 🐛 Mostrar estados de loading/error */}
@@ -83,7 +92,7 @@ export function NavigationMenuCategory() {
                                                         className="category-image"
                                                     />
                                                 ) : (
-                                                    <span className="category-icon">{category.icon}</span>
+                                                    <span className="category-icon">BAPE</span>
                                                 )}
                                                 
                                                 <div className="category-text-container">
@@ -99,6 +108,16 @@ export function NavigationMenuCategory() {
                         </div>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
+
+                 <NavigationMenuItem>
+                    <button
+                        onClick={clearCategoryFilter}
+                        className={`all-products-button ${!currentCategory ? 'active' : ''}`}
+                    >
+                        Ver Todos
+                    </button>
+                </NavigationMenuItem>
+
             </NavigationMenuList>
         </NavigationMenu>
     );
