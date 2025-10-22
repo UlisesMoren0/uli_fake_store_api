@@ -10,6 +10,11 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "../styles/globals.css";
 
+// 🎨 Importar CSS personalizados
+import "./sections/productCard/productCard.css";
+import "./sections/productList/ProductList.css";
+import "./sections/navigationMenu/navigationMenu.css";
+
 const elem = document.getElementById("root")!;
 const app = (
   <StrictMode>

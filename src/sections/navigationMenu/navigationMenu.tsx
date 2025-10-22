@@ -46,48 +46,48 @@ export function NavigationMenuCategory() {
         <NavigationMenu>
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <div className="font-bold">Bape Store</div>
+                    <div className="titleNavText">Bape Store</div>
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Categorías</NavigationMenuTrigger>
                     <NavigationMenuContent>
-                        <div className="p-4 w-[400px] md:w-[500px] lg:w-[600px]">
+                        <div className="menu-content-container">
                             {/* 🐛 Mostrar estados de loading/error */}
                             {loadingCategories && (
-                                <div className="text-center py-4">Cargando categorías...</div>
+                                <div className="loading-container">Cargando categorías...</div>
                             )}
                             
                             {error && (
-                                <div className="text-red-500 text-center py-4">
-                                    Error: {error}
+                                <div className="error-container">
+                                    <span className="error-text">Error: {error}</span>
                                 </div>
                             )}
                             
                             {!loadingCategories && !error && availableCategories.length === 0 && (
-                                <div className="text-center py-4">No hay categorías disponibles</div>
+                                <div className="empty-container">No hay categorías disponibles</div>
                             )}
                             
                             {!loadingCategories && !error && availableCategories.length > 0 && (
-                                <ul className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+                                <ul className="categories-grid">
                                     {availableCategories.map((category) => (
                                         <li key={category.id}>
                                             <NavigationMenuLink
                                                 onClick={() => handleCategorySelect(category.id)}
-                                                className="flex items-center space-x-3 p-3 rounded-md hover:bg-gray-100 cursor-pointer"
+                                                className="category-item"
                                             >
                                                 {category.image ? (
                                                     <img 
                                                         src={category.image} 
                                                         alt={category.displayName}
-                                                        className="w-8 h-8 rounded-full object-cover"
+                                                        className="category-image"
                                                     />
                                                 ) : (
-                                                    <span className="text-2xl">{category.icon}</span>
+                                                    <span className="category-icon">{category.icon}</span>
                                                 )}
                                                 
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium text-sm">
+                                                <div className="category-text-container">
+                                                    <span className="category-name">
                                                         {category.displayName}
                                                     </span>
                                                 </div>

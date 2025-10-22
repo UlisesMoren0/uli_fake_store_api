@@ -1,0 +1,95 @@
+/* NavigationMenu Styles */
+
+/* Título del store */
+.titleNavText {
+    font-weight: bold;
+}
+
+/* Contenedor principal del contenido del menú */
+.menu-content-container {
+    padding: 1rem; /* p-4 */
+    width: 400px; /* w-[400px] */
+}
+
+@media (min-width: 768px) {
+    .menu-content-container {
+        width: 500px; /* md:w-[500px] */
+    }
+}
+
+@media (min-width: 1024px) {
+    .menu-content-container {
+        width: 600px; /* lg:w-[600px] */
+    }
+}
+
+/* Estados de carga, error y vacío */
+.loading-container,
+.error-container,
+.empty-container {
+    text-align: center; /* text-center */
+    padding: 1rem 0; /* py-4 */
+}
+
+.error-text {
+    color: #ef4444; /* text-red-500 */
+}
+
+/* Grid de categorías */
+.categories-grid {
+    display: grid;
+    gap: 0.5rem; /* gap-2 */
+    grid-template-columns: repeat(1, minmax(0, 1fr)); /* grid por defecto */
+}
+
+@media (min-width: 768px) {
+    .categories-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* md:grid-cols-2 */
+    }
+}
+
+@media (min-width: 1024px) {
+    .categories-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)); /* lg:grid-cols-3 */
+    }
+}
+
+/* Item de categoría */
+.category-item {
+    display: flex; /* flex */
+    align-items: center; /* items-center */
+    gap: 0.75rem; /* space-x-3 */
+    padding: 0.75rem; /* p-3 */
+    border-radius: 0.375rem; /* rounded-md */
+    cursor: pointer; /* cursor-pointer */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.category-item:hover {
+    background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+/* Imagen de categoría */
+.category-image {
+    width: 2rem; /* w-8 */
+    height: 2rem; /* h-8 */
+    border-radius: 9999px; /* rounded-full */
+    object-fit: cover; /* object-cover */
+}
+
+/* Icono de categoría */
+.category-icon {
+    font-size: 1.5rem; /* text-2xl */
+}
+
+/* Contenedor de texto de categoría */
+.category-text-container {
+    display: flex; /* flex */
+    flex-direction: column; /* flex-col */
+}
+
+/* Nombre de categoría */
+.category-name {
+    font-weight: 500; /* font-medium */
+    font-size: 0.875rem; /* text-sm */
+}

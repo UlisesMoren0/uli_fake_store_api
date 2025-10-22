@@ -15,3 +15,11 @@ declare module "*.module.css" {
   const classes: { readonly [key: string]: string };
   export = classes;
 }
+
+declare module "*.css" {
+  /**
+   * CSS file content as string for side-effect imports
+   */
+  const content: any;
+  export = content;
+}
