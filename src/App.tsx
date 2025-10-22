@@ -5,7 +5,7 @@ import { NavigationMenuCategory} from "@/sections/navigationMenu/navigationMenu"
 
 export function App() {
   return (
-    <Card>
+    <Card >  
       <NavigationMenuCategory />
       <CardHeader>
         <CardTitle>Catálogo de Productos</CardTitle>
