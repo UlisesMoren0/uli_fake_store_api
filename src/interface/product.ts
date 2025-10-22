@@ -1,3 +1,5 @@
+import type { Category } from "@/interface/category";
+
 export interface Product {
 id: number;
 title: string;
@@ -6,13 +8,6 @@ description: string;
 images: string[];
 creationAt: string;
 updatedAt: string;
-category: {
-    id: number;
-    name: string;
-    image: string;
-    creationAt: string;
-    updatedAt: string;
-    slug: string;
-};
 slug: string;
+category: Category;
 }

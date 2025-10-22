@@ -7,6 +7,6 @@ const getProducts = async (offset: number = 0) => {
         console.error("Error fetching products:", error);
         return null;
     }
-}
+};
 
 export { getProducts };

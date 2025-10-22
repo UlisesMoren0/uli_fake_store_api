@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import type { Product } from "./interface/product";
-import { useProducts } from "./store/useProducts.controller";
+import type { Product } from "../../interface/product";
+import { useProducts } from "../../store/useProducts.controller";
 
 
 export function ProductList() {

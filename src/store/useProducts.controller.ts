@@ -36,3 +36,4 @@ export const useProducts = create<ProductStore>((set, get) => ({
         }
     }
 }));
+
