@@ -3,40 +3,26 @@ import { useEffect } from "react";
 import type { Product } from "../../interface/product";
 import { useProducts } from "../../store/useProducts.controller";
 import ProductCard from "../productCard/productCard";
-import { getCategoryDisplayName } from '../../store/categoryMapper'
-
+import { useCategories } from "@/store/useCategories.controller";
 
 export function ProductList() {
-    const {
-        categories: categoryProducts,
-        currentCategory,
-        loading: categoryLoading,
-        error: categoryError,
-        showingAllProducts,
-        allCategoryProducts,
-        showAllProducts
-    } = useProductsByCategory();
+    const { categoriesMap } = useCategories();
 
-    const {
-        products: allProducts,
-        loading: productsLoading,
-        error: productsError,
-        fetchProducts
-    } = useProducts();
+    const getCategoryDisplayName = (categoryId: string) => {
+        const id = parseInt(categoryId);
+        return categoriesMap.get(id) || `Categoría ${categoryId}`;
+    };
 
     useEffect(() => {
-        if (!currentCategory) {
+        if (!categoriesMap.size) {
             // Si no hay categoría actual, cargar todos los productos
             fetchProducts();
         }
     }, [currentCategory, fetchProducts]);
 
-    //Determino que productos mostrar
-    const productsToShow = currentCategory ? categoryProducts : allProducts;
-    const isLoading = currentCategory ? categoryLoading : productsLoading;
-    const error = currentCategory ? categoryError : productsError;
 
-
+    useEffect(() => {parseProductsByCategory()}, []);
+    console.log({productsByCategoryMap});
 
     return (
         <div className="product-list-container">

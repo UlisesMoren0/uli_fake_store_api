@@ -9,4 +9,15 @@ const getProducts = async (offset: number = 0) => {
     }
 };
 
-export { getProducts };
+const getProductByCategory = async (categoryId: number) => {
+    try {
+        const response = await fetch(`https://api.escuelajs.co/api/v1/products?categoryId=${categoryId}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching products by category:", error);
+        return null;
+    }
+};
+
+export { getProducts, getProductByCategory };

@@ -1,6 +1,7 @@
 import { getProducts } from "@/http/products";
 import type { Product } from "@/interface/product";
 import { create } from "zustand";
+import { useCategories } from "./useCategories.controller";
 
 interface ProductStore {
     products: Product[];
@@ -9,6 +10,8 @@ interface ProductStore {
     error: string | null;
     offset?: number;
     fetchProducts: () => Promise<void>;
+    parseProductsByCategory: () => void;
+    productsByCategoryMap?: Map<number, Product[]>;
 }
 
 export const useProducts = create<ProductStore>((set, get) => ({
@@ -34,6 +37,19 @@ export const useProducts = create<ProductStore>((set, get) => ({
         } catch (err) {
             set({ error: err instanceof Error ? err.message : "Error desconocido", loading: false });
         }
+    },
+    parseProductsByCategory: () => {
+        const { products, loading } = get();
+        if (loading) return;
+
+        const categorizedProducts = new Map<number, Product[]>();
+        for (const p of products) {
+            const categoryId = p.category.id;
+            if (!categorizedProducts.has(categoryId)) {
+                categorizedProducts.set(categoryId, []);
+            }
+            categorizedProducts.get(categoryId)?.push(p);
+        }
+        set({ productsByCategoryMap: categorizedProducts });
     }
 }));
-

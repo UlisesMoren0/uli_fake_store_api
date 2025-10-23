@@ -8,40 +8,37 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useProductsByCategory } from "../../store/useProductsByCategory.controller";
 import { useEffect } from "react";
+import { useCategories } from "@/store/useCategories.controller";
 
 export function NavigationMenuCategory() {
-    const { 
-        availableCategories,
-        loadingCategories,
-        error,
+    const { categories, categoriesMap, getCategories } = useCategories();
+
+    const {
         currentCategory,
-        fetchAvailableCategories,
         fetchProductsByCategory,
         setCurrentCategory,
         clearCategoryFilter,
     } = useProductsByCategory();
 
-    // 🚀 Cargar categorías al inicio
     useEffect(() => {
-        fetchAvailableCategories();
-    }, [fetchAvailableCategories]);
+        getCategories();
+    }, [getCategories]);
 
-    // 🐛 Debug logs
-    console.log('Debug NavigationMenu:', {
-        availableCategories,
-        loadingCategories,
-        error,
-        categoriesLength: availableCategories?.length
-    });
-
-    // 🎯 Manejar selección simple
-    const handleCategorySelect = async (name: string) => {
+    const handleCategorySelect = async (categoryId: number) => {
         try {
-            await fetchProductsByCategory(name);
-            setCurrentCategory(name);
+            const categoryName = categoriesMap.get(categoryId);
+            if (categoryName) {
+                await fetchProductsByCategory(categoryName);
+                setCurrentCategory(categoryId.toString());
+            }
         } catch (error) {
             console.error('Error al seleccionar categoría:', error);
         }
+    };
+
+    const getCategoryDisplayName = (categoryId: string) => {
+        const id = parseInt(categoryId);
+        return categoriesMap.get(id) || `Categoría ${categoryId}`;
     };
 
     return (
@@ -50,66 +47,53 @@ export function NavigationMenuCategory() {
                 <NavigationMenuItem>
                     <div className="titleNavText">Bape Store</div>
                 </NavigationMenuItem>
-                
+
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Categorías
                         {currentCategory && currentCategory !== 'all' && (
                             <span className="current-category-badge">
-                                {currentCategory}
+                                {getCategoryDisplayName(currentCategory)}
                             </span>
                         )}
                     </NavigationMenuTrigger>
 
                     <NavigationMenuContent>
                         <div className="menu-content-container">
-                            {/* 🐛 Mostrar estados de loading/error */}
-                            {loadingCategories && (
+                            {/*  Mostrar estados de loading/error */}
+                            {categories.length === 0 && (
                                 <div className="loading-container">Cargando categorías...</div>
                             )}
-                            
-                            {error && (
-                                <div className="error-container">
-                                    <span className="error-text">Error: {error}</span>
-                                </div>
-                            )}
-                            
-                            {!loadingCategories && !error && availableCategories.length === 0 && (
-                                <div className="empty-container">No hay categorías disponibles</div>
-                            )}
-                            
-                            {!loadingCategories && !error && availableCategories.length > 0 && (
-                                <ul className="categories-grid">
-                                    {availableCategories.map((category) => (
-                                        <li key={category.id}>
-                                            <NavigationMenuLink
-                                                onClick={() => handleCategorySelect(category.id)}
-                                                className="category-item"
-                                            >
-                                                {category.image ? (
-                                                    <img 
-                                                        src={category.image} 
-                                                        alt={category.displayName}
-                                                        className="category-image"
-                                                    />
-                                                ) : (
-                                                    <span className="category-icon">BAPE</span>
-                                                )}
-                                                
-                                                <div className="category-text-container">
-                                                    <span className="category-name">
-                                                        {category.displayName}
-                                                    </span>
-                                                </div>
-                                            </NavigationMenuLink>
-                                        </li>
+
+                            {categories.length > 0 && (
+                                <div className="categories-grid">
+                                    {categories.map((category) => (
+                                        <NavigationMenuLink
+                                            key={category.id}
+                                            onClick={() => handleCategorySelect(category.id)}
+                                            className="category-item"
+                                        >
+                                            {category.image ? (
+                                                <img
+                                                    src={category.image}
+                                                    alt={category.name}
+                                                    className="category-image"
+                                                />
+                                            ) : (
+                                                <span className="category-icon">BAPE</span>
+                                            )}
+                                            <div className="category-content">
+                                                <h4>{category.name}</h4>
+                                                <p>ID : {category.id}</p>
+                                            </div>
+                                        </NavigationMenuLink>
                                     ))}
-                                </ul>
+                                </div>
                             )}
                         </div>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                 <NavigationMenuItem>
+                <NavigationMenuItem>
                     <button
                         onClick={clearCategoryFilter}
                         className={`all-products-button ${!currentCategory ? 'active' : ''}`}

@@ -8,10 +8,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardDescription, CardTitle, CardFooter, CardContent } from '@/components/ui/card'
 
-import { getCategoryDisplayName } from '../../store/categoryMapper'
 
 import { cn } from '@/lib/utils'
 import type { Product } from '@/interface/product'
+
+import { useCategories } from '@/store/useCategories.controller'
 
 interface ProductCardProps {
   product?: Product;
@@ -19,6 +20,12 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const [liked, setLiked] = useState<boolean>(false)
+
+  const { categoriesMap } = useCategories();
+
+  const getCategoryName = (categoryId: number): string => {
+    return categoriesMap.get(categoryId) || `Categoría ${categoryId}`;
+  };
 
   // 🛡️ Manejar caso cuando no hay producto
   if (!product) {
@@ -61,7 +68,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <CardHeader>
           <CardTitle className="card-title">{product.title}</CardTitle>
           <CardDescription className="badge-container">
-            <Badge variant='outline'>{getCategoryDisplayName(product.category.id.toString())}</Badge>
+            <Badge variant='outline'>{getCategoryName(product.category.id)}</Badge>
             <Badge variant='outline'>ID: {product.id}</Badge>
           </CardDescription>
         </CardHeader>
