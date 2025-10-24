@@ -1,55 +1,90 @@
-import { useProductsByCategory } from "@/store/useProductsByCategory.controller";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Product } from "../../interface/product";
 import { useProducts } from "../../store/useProducts.controller";
 import ProductCard from "../productCard/productCard";
 import { useCategories } from "@/store/useCategories.controller";
+import { useCategoryContext } from "@/context/CategoryContext";
 
 export function ProductList() {
-    const { categoriesMap } = useCategories();
+    const { products, loading, error, fetchProducts } = useProducts();
+    const { categoriesMap, getCategories } = useCategories();
+    const { selectedCategory } = useCategoryContext();
+    
+    const [displayLimit, setDisplayLimit] = useState(10);
+    const ITEMS_PER_PAGE = 10;
+
+    const filteredProducts = useMemo(() => {
+        if (!selectedCategory || selectedCategory === 'all') {
+            return products;
+        }
+        
+        return products.filter(product => 
+            product.category.id.toString() === selectedCategory
+        );
+    }, [products, selectedCategory]);
+
+    const productsToDisplay = useMemo(() => {
+        return filteredProducts.slice(0, displayLimit);
+    }, [filteredProducts, displayLimit]);
+
+    const showMoreProducts = () => {
+        setDisplayLimit(prev => prev + ITEMS_PER_PAGE);
+    };
+
+    const resetPagination = () => {
+        setDisplayLimit(ITEMS_PER_PAGE);
+    };
+
+    useEffect(() => {
+        resetPagination();
+    }, [selectedCategory]);
 
     const getCategoryDisplayName = (categoryId: string) => {
-        const id = parseInt(categoryId);
+        const id = Number.parseInt(categoryId);
         return categoriesMap.get(id) || `Categoría ${categoryId}`;
     };
 
     useEffect(() => {
-        if (!categoriesMap.size) {
-            // Si no hay categoría actual, cargar todos los productos
+        if (products.length === 0) {
             fetchProducts();
         }
-    }, [currentCategory, fetchProducts]);
+        if (categoriesMap.size === 0) {
+            getCategories();
+        }
+    }, [fetchProducts, getCategories, products.length, categoriesMap.size]);
 
-
-    useEffect(() => {parseProductsByCategory()}, []);
-    console.log({productsByCategoryMap});
+    const availableCategories = useMemo(() => {
+        if (products.length === 0) return [];
+        
+        const uniqueCategories = [...new Set(products.map(p => p.category.id))];
+        return uniqueCategories.map(id => {
+            const product = products.find(p => p.category.id === id);
+            return {
+                id,
+                name: product?.category.name || `Categoría ${id}`,
+                productCount: products.filter(p => p.category.id === id).length
+            };
+        });
+    }, [products]);
 
     return (
         <div className="product-list-container">
-            {/* Ahora muestra la categoria actual */}
-            {currentCategory && (
+            {selectedCategory && selectedCategory !== 'all' && (
                 <div className="category-info">
                     <h3>
-                        {currentCategory === "all" ? "Todos los Productos" : `Categoría: ${getCategoryDisplayName(currentCategory)}`}
+                        Categoría: {getCategoryDisplayName(selectedCategory)}
                     </h3>
                     <p className="category-count">
-                        Mostrando {categoryProducts.length} de {categoryProducts.length} productos
+                        Mostrando {productsToDisplay.length} de {filteredProducts.length} productos
                     </p>
-                    {!showingAllProducts && allCategoryProducts.length > 10 && (
-                        <button onClick={showAllProducts} className="show-all-button">
-                            Mostrar todos los productos
-                        </button>
-                    )}
                 </div>
             )}
 
-            {/*  estados de loading/error */}
-            {isLoading && (
+            {loading && (
                 <div className="loading-container">
                     <div className="loading-spinner">
-                        {/*INSERTAR SPINNER PENDEJO*/}
                         <div className="loading-text">
-                            {currentCategory ? "Cargando productos de la categoría..." : "Cargando productos..."}
+                            Cargando productos...
                         </div>
                     </div>
                 </div>
@@ -61,31 +96,28 @@ export function ProductList() {
                 </div>
             )}
 
-            {/* 🎨 Grid de productos usando ProductCard */}
-            {!isLoading && !error && productsToShow.length > 0 && (
+            {!loading && !error && productsToDisplay.length > 0 && (
                 <div className="product-grid">
-                    {productsToShow.map((product: Product) => (
+                    {productsToDisplay.map((product: Product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             )}
 
-            {/* 📦 Mensaje cuando no hay productos */}
-            {!isLoading && !error && productsToShow.length === 0 && (
-                <div className="empty-container">
-                    <p className="empty-text">No hay productos disponibles</p>
+            {!loading && !error && filteredProducts.length > displayLimit && (
+                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                    <button
+                        onClick={showMoreProducts}
+                        className="px-6 py-3 bg-blue-500 text-white border-none rounded-md text-base cursor-pointer shadow-md transition-colors duration-200 ease-in-out hover:bg-blue-700 focus:bg-blue-700"
+                    >
+                        Mostrar más productos ({filteredProducts.length - displayLimit} restantes)
+                    </button>
                 </div>
             )}
 
-            {/* 🔄 Botón cargar más */}
-            {!isLoading && productsToShow.length > 0 && (
-                <div className="load-more-container">
-                    <button
-                        onClick={fetchProducts}
-                        className="load-more-button"
-                    >
-                        Cargar más productos
-                    </button>
+            {!loading && !error && filteredProducts.length === 0 && (
+                <div className="empty-container">
+                    <p className="empty-text">No hay productos disponibles</p>
                 </div>
             )}
         </div>

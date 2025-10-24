@@ -6,38 +6,45 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { useProductsByCategory } from "../../store/useProductsByCategory.controller";
-import { useEffect } from "react";
 import { useCategories } from "@/store/useCategories.controller";
+import { useCategoryContext } from "@/context/CategoryContext";
+import { useProducts } from "@/store/useProducts.controller";
+import { useEffect, useMemo } from "react";
 
 export function NavigationMenuCategory() {
-    const { categories, categoriesMap, getCategories } = useCategories();
+    const { categoriesMap, getCategories } = useCategories();
+    const { products } = useProducts();
+    const { selectedCategory, setSelectedCategory } = useCategoryContext();
 
-    const {
-        currentCategory,
-        fetchProductsByCategory,
-        setCurrentCategory,
-        clearCategoryFilter,
-    } = useProductsByCategory();
+    // 🎯 Obtener categorías únicas de los productos reales
+    const availableCategories = useMemo(() => {
+        if (products.length === 0) return [];
+        
+        const uniqueCategories = [...new Set(products.map(p => p.category.id))];
+        return uniqueCategories.map(id => {
+            const product = products.find(p => p.category.id === id);
+            return {
+                id,
+                name: product?.category.name || `Categoría ${id}`,
+                productCount: products.filter(p => p.category.id === id).length
+            };
+        });
+    }, [products]);
 
     useEffect(() => {
         getCategories();
     }, [getCategories]);
 
-    const handleCategorySelect = async (categoryId: number) => {
-        try {
-            const categoryName = categoriesMap.get(categoryId);
-            if (categoryName) {
-                await fetchProductsByCategory(categoryName);
-                setCurrentCategory(categoryId.toString());
-            }
-        } catch (error) {
-            console.error('Error al seleccionar categoría:', error);
-        }
+    const handleCategorySelect = (categoryId: number) => {
+        setSelectedCategory(categoryId.toString());
+    };
+
+    const handleShowAll = () => {
+        setSelectedCategory('all');
     };
 
     const getCategoryDisplayName = (categoryId: string) => {
-        const id = parseInt(categoryId);
+        const id = Number.parseInt(categoryId);
         return categoriesMap.get(id) || `Categoría ${categoryId}`;
     };
 
@@ -50,9 +57,9 @@ export function NavigationMenuCategory() {
 
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Categorías
-                        {currentCategory && currentCategory !== 'all' && (
+                        {selectedCategory && selectedCategory !== 'all' && (
                             <span className="current-category-badge">
-                                {getCategoryDisplayName(currentCategory)}
+                                {getCategoryDisplayName(selectedCategory)}
                             </span>
                         )}
                     </NavigationMenuTrigger>
@@ -60,30 +67,22 @@ export function NavigationMenuCategory() {
                     <NavigationMenuContent>
                         <div className="menu-content-container">
                             {/*  Mostrar estados de loading/error */}
-                            {categories.length === 0 && (
+                            {availableCategories.length === 0 && (
                                 <div className="loading-container">Cargando categorías...</div>
                             )}
 
-                            {categories.length > 0 && (
+                            {availableCategories.length > 0 && (
                                 <div className="categories-grid">
-                                    {categories.map((category) => (
+                                    {availableCategories.map((category) => (
                                         <NavigationMenuLink
                                             key={category.id}
                                             onClick={() => handleCategorySelect(category.id)}
                                             className="category-item"
                                         >
-                                            {category.image ? (
-                                                <img
-                                                    src={category.image}
-                                                    alt={category.name}
-                                                    className="category-image"
-                                                />
-                                            ) : (
-                                                <span className="category-icon">BAPE</span>
-                                            )}
+                                            <span className="category-icon">BAPE</span>
                                             <div className="category-content">
                                                 <h4>{category.name}</h4>
-                                                <p>ID : {category.id}</p>
+                                                <p>ID: {category.id} ({category.productCount} productos)</p>
                                             </div>
                                         </NavigationMenuLink>
                                     ))}
@@ -95,8 +94,8 @@ export function NavigationMenuCategory() {
 
                 <NavigationMenuItem>
                     <button
-                        onClick={clearCategoryFilter}
-                        className={`all-products-button ${!currentCategory ? 'active' : ''}`}
+                        onClick={handleShowAll}
+                        className={`all-products-button ${selectedCategory === 'all' || !selectedCategory ? 'active' : ''}`}
                     >
                         Ver Todos
                     </button>

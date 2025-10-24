@@ -1,7 +1,6 @@
 import { getProducts } from "@/http/products";
 import type { Product } from "@/interface/product";
 import { create } from "zustand";
-import { useCategories } from "./useCategories.controller";
 
 interface ProductStore {
     products: Product[];
@@ -23,14 +22,23 @@ export const useProducts = create<ProductStore>((set, get) => ({
     fetchProducts: async () => {
         set({ loading: true });
         try {
-            const data = await getProducts(get().offset);
-            if (data) {
-                const productsMap = get().productsMap;
-                for (const product of data) {
+            const promises = [
+                getProducts(0),
+                getProducts(20),
+                getProducts(40),
+            ];
+            
+            const results = await Promise.all(promises);
+            const allProducts = results.flat().filter(Boolean);
+            
+            if (allProducts.length > 0) {
+                const productsMap = new Map<number, Product>();
+                for (const product of allProducts) {
                     productsMap.set(product.id, product);
                 }
                 const productsArray = Array.from(productsMap.values());
-                set({ products: productsArray, loading: false, offset: (get().offset ?? 0) + 10, productsMap });
+                
+                set({ products: productsArray, loading: false, productsMap });
             } else {
                 set({ error: "No se pudieron cargar los productos.", loading: false });
             }

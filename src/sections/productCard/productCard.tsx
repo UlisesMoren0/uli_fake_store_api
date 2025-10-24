@@ -38,7 +38,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
     );
   }
 
-  // 🖼️ Obtener la primera imagen válida
   const getValidImage = (images: string[]): string => {
     const validImage = images?.find(img => img && !img.includes('[') && !img.includes('"'));
     return validImage || 'https://via.placeholder.com/300x300?text=No+Image';

@@ -27,7 +27,7 @@ interface ProductsByCategoryStore {
     fetchAvailableCategories: () => Promise<void>;
     fetchProductsByCategory: (name: string) => Promise<void>;
     setCurrentCategory: (name: string) => void;
-    clearCategoryFilter: () => void; // 🆕 Nueva función
+    clearCategoryFilter: () => void; // Nueva función
 }
 
 const useProductsByCategory = create<ProductsByCategoryStore>((set) => ({
